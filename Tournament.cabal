@@ -7,7 +7,6 @@ synopsis:            Peer grading system
 -- description:         
 -- homepage:            https://github.com/lcycon/TutorQueue
 license:             GPL-3
-license-file:        LICENSE
 author:              Luke Cycon
 maintainer:          luke@lukecycon.com
 -- copyright:           

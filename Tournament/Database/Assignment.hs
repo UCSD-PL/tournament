@@ -16,7 +16,11 @@ import Database.HDBC
 import Database.HDBC.PostgreSQL
 import Tournament.Database.Util
 
-data Assignment = Assignment Int Int String Int
+data Assignment = Assignment { id :: Integer
+                             , courseId :: Integer
+                             , name :: String
+                             , maxPoints :: Int
+                             }
 
 instance FromJSON Assignment where
   parseJSON (Object v) =

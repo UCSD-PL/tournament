@@ -10,7 +10,11 @@ import Database.HDBC
 import Database.HDBC.PostgreSQL
 import Tournament.Database.Util
 
-data Course = Course Int String String String
+data Course = Course { id :: Integer
+                     , code :: String
+                     , name :: String
+                     , term :: String
+                     }
 
 instance FromJSON Course where
  parseJSON (Object v) =

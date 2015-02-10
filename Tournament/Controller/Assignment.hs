@@ -4,7 +4,7 @@ module Tournament.Controller.Assignment(assignmentRoutes) where
 
 import Control.Monad.IO.Class (liftIO)
 import Data.Monoid (mconcat)
-import Tournament.Database
+import Tournament.Database.Assignment
 import Tournament.Controller.Util
 import Data.Aeson (FromJSON)
 import Network.HTTP.Types.Status

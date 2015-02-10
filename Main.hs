@@ -6,7 +6,6 @@ import Data.Monoid (mconcat)
 import Tournament.Controller.Assignment
 import Tournament.Controller.Course
 import Tournament.Controller.Util
-import Tournament.Database
 import Network.HTTP.Types.Status
 import Web.Scotty
 
