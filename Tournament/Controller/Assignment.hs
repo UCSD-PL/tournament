@@ -22,9 +22,9 @@ assignmentRoutes = do
        assignment <- liftIO $ getAssignment id aid
        maybe (status status404) json assignment
 
-    post "/courses/:id/assignments" $ jsonParse "Invalid JSON" $ \(Assignment i _ n p) -> do
+    post "/courses/:id/assignments" $ jsonParse "Invalid JSON" $ \a -> do
        id <- param "id"
-       assignment <- liftIO $ insertAssignment (Assignment i id n p)
+       assignment <- liftIO . insertAssignment $ a { courseId = id }
        json assignment
 
     delete "/courses/:id/assignments/:aid" $ do
