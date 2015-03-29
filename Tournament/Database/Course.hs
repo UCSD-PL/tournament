@@ -10,7 +10,8 @@ import Database.HDBC
 import Database.HDBC.PostgreSQL
 import Tournament.Database.Util
 
-data Course = Course { id :: Integer
+data Course = Course { id :: Int
+                     , userId :: Int
                      , code :: String
                      , name :: String
                      , term :: String
@@ -19,25 +20,27 @@ data Course = Course { id :: Integer
 instance FromJSON Course where
  parseJSON (Object v) =
     Course <$> v .:? "id" .!= 0
+           <*> v .: "userId"
            <*> v .: "department"
            <*> v .: "course"
            <*> v .: "term"
  parseJSON _ = mzero
 
 instance ToJSON Course where
- toJSON (Course id department course term) =
+ toJSON (Course id userId department course term) =
     object [ "id" .= id
+           , "userId" .= userId
            , "department" .= department
            , "course"     .= course
            , "term"       .= term
            ]
 
 toCourse :: [SqlValue] -> Course
-toCourse (id : department : course : prof : _) = Course (fromSql id) (fromSql department) (fromSql course) (fromSql prof)
+toCourse (id : user : department : course : prof : _) = Course (fromSql id) (fromSql user) (fromSql department) (fromSql course) (fromSql prof)
 
-getCourses :: IO [Course]
-getCourses = withDatabase $ \conn -> do
-                courses <- quickQuery' conn "SELECT * FROM courses" []
+getCourses :: Int -> IO [Course]
+getCourses u = withDatabase $ \conn -> do
+                courses <- quickQuery' conn "SELECT * FROM courses WHERE userId = ?" [toSql u]
                 return $ map toCourse courses
 
 getCourse :: Int -> IO (Maybe Course)
@@ -49,7 +52,7 @@ deleteCourse :: Int -> IO Integer
 deleteCourse a = withDatabase $ \conn -> run conn "DELETE FROM courses WHERE id=?" [toSql a]
 
 insertCourse :: Course -> IO Course
-insertCourse (Course _ a b c) = withDatabase $ \conn -> do
-                                 res <- quickQuery' conn "INSERT INTO courses(department, course, term) VALUES (?, ?, ?) RETURNING id" [toSql a, toSql b, toSql c]
+insertCourse (Course _ u a b c) = withDatabase $ \conn -> do
+                                 res <- quickQuery' conn "INSERT INTO courses(userId, department, course, term) VALUES (?, ?, ?) RETURNING id" [toSql u, toSql a, toSql b, toSql c]
                                  let id = fromSql . head . head $ res
-                                 return $ Course id a b c
+                                 return $ Course id u a b c

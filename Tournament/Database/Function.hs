@@ -1,6 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Tournament.Database.Function(
+  getFunctions,
+  getFunction,
+  insertFunction,
+  deleteFunction,
   Function(..)
   ) where
 
