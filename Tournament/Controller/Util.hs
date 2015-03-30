@@ -17,6 +17,7 @@ import qualified Tournament.Database.Assignment as A
 import qualified Tournament.Database.Course as C
 import qualified Tournament.Database.Function as F
 import qualified Tournament.Database.User as U
+import qualified Tournament.Database.TestCase as T
 
 jsonParse :: FromJSON a => Text -> (a -> ActionM ()) -> ActionM ()
 jsonParse e b = go `rescue` handle
@@ -56,6 +57,13 @@ checkFunctionAuth u f = withDatabase $ \conn -> do
   return $ length res == 1
   where
     query = "SELECT 1 FROM courses c, assignments a, functions f WHERE a.courseId = c.id AND f.assignmentId = a.id AND c.userId = ? AND f.id = ?"
+
+checkTestCaseAuth :: U.User -> T.TestCase -> IO Bool
+checkTestCaseAuth u t = withDatabase $ \conn -> do
+  res <- quickQuery' conn query [toSql (U.id u), toSql (T.id t)]
+  return $ length res == 1
+  where
+    query = "SELECT 1 FROM courses c, assignments a, functions f, testCases t WHERE a.courseId = c.id AND f.assignmentId = a.id AND t.functionId = f.id AND c.userId = ? AND t.id = ?"
 
 checkAuth :: Bool -> ActionM () -> ActionM ()
 checkAuth True a = a

@@ -7,6 +7,7 @@ import Network.HTTP.Types.Status
 import Tournament.Controller.Assignment
 import Tournament.Controller.Course
 import Tournament.Controller.Function
+import Tournament.Controller.TestCase
 import Tournament.Controller.User
 import Tournament.Controller.Util
 import Web.Scotty
@@ -16,3 +17,4 @@ main = scotty 3000 $ do
     courseRoutes
     functionRoutes
     userRoutes
+    testCaseRoutes
