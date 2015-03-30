@@ -16,8 +16,8 @@ import Database.HDBC
 import Database.HDBC.PostgreSQL
 import Tournament.Database.Util
 
-data Assignment = Assignment { id :: Integer
-                             , courseId :: Integer
+data Assignment = Assignment { id :: Int
+                             , courseId :: Int
                              , name :: String
                              , maxPoints :: Int
                              }
