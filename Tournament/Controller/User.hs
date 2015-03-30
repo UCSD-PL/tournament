@@ -10,7 +10,7 @@ import Data.Aeson (FromJSON)
 import Network.HTTP.Types.Status
 import Web.Scotty
 
-userRoutes = do
+userRoutes =
     post "/users" $ jsonParse "Invalid JSON" $ \user -> do
         user <- liftIO $ createUser user
         json user

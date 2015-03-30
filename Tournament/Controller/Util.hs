@@ -38,7 +38,7 @@ auth action = do
    _       -> unauthorized
 
   where
-    decode = fmap (BS.unpack) . BS.split ':' . decodeLenient . head . drop 1 . BS.split ' '
+    decode = fmap BS.unpack . BS.split ':' . decodeLenient . head . drop 1 . BS.split ' '
     check [login, pwd] = U.loginUser login pwd
     check _            = return Nothing
 

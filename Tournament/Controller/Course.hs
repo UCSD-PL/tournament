@@ -28,11 +28,11 @@ courseRoutes = do
 
     post "/courses" $ jsonParse "Invalid JSON" $ \course ->
       auth $ \user -> do
-        course <- liftIO $ insertCourse (course { userId = (U.id user)})
+        course <- liftIO $ insertCourse (course { userId = U.id user})
         json course
 
 performDelete user course
-  | (U.id user) == (userId course) = do
+  | U.id user == userId course= do
       liftIO $ deleteCourse (Tournament.Database.Course.id course)
       status status200
   | otherwise                      = unauthorized

@@ -45,7 +45,7 @@ toFunction _                                                    = Nothing
 getFunctions              :: Int -> IO [Function]
 getFunctions assignmentId = withDatabase $ \conn -> do
   res <- quickQuery' conn "SELECT * FROM functions WHERE assignmentId=?" [toSql assignmentId]
-  return $ catMaybes . map toFunction $ res
+  return $ mapMaybe toFunction res
 
 getFunction            :: Int -> IO (Maybe Function)
 getFunction functionId = withDatabase $ \conn -> do
