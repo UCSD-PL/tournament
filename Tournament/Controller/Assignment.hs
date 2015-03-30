@@ -36,8 +36,6 @@ assignmentRoutes = do
     delete "/courses/:id/assignments/:aid" $ auth $ \user -> do
       cid <- param "id"
       aid <- param "aid"
-      assignment <- liftIO $ getAssignment cid aid
-      okay <- maybe (return False) (liftIO . checkAssignmentAuth user) assignment
-      checkAuth okay $ do
+      checkAssignmentAuth user cid aid . const $ do
         liftIO $ A.deleteAssignment cid aid
         status status200

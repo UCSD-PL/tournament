@@ -14,31 +14,23 @@ import qualified Tournament.Database.Function as F
 testCaseRoutes = do
     get "/courses/:id/assignments/:aid/functions/:fid/testCases" $ auth $ \user -> do
       fid <- param "fid"
-      function <- liftIO $ F.getFunction fid
-      okay <- maybe (return False) (liftIO . checkFunctionAuth user) function
-      checkAuth okay $ do
+      checkFunctionAuth user fid . const $ do
         testCases <- liftIO $ getTestCases fid
         json testCases
 
     get "/courses/:id/assignments/:aid/functions/:fid/testCases/:tcid" $ auth $ \user -> do
       tcid <- param "tcid"
-      testCase <- liftIO $ getTestCase tcid
-      okay <- maybe (return False) (liftIO . checkTestCaseAuth user) testCase
-      checkAuth okay $ maybe (status status404) json testCase
+      checkTestCaseAuth user tcid json
 
     post "/courses/:id/assignments/:aid/functions/:fid/testCases" $ jsonParse "Invalid JSON" $ \t ->
       auth $ \user -> do
-      fid <- param "fid"
-      function <- liftIO $ F.getFunction fid
-      okay <- maybe (return False) (liftIO . checkFunctionAuth user) function
-      checkAuth okay $ do
-        testCase <- liftIO . insertTestCase $ t { functionId = fid }
-        json testCase
+        fid <- param "fid"
+        checkFunctionAuth user fid . const $ do
+          testCase <- liftIO . insertTestCase $ t { functionId = fid }
+          json testCase
 
     delete "/courses/:id/assignments/:aid/functions/:fid/testCases/:tcid" $ auth $ \user -> do
       tcid <- param "tcid"
-      testCase <- liftIO $ getTestCase tcid
-      okay <- maybe (return False) (liftIO . checkTestCaseAuth user) testCase
-      checkAuth okay $ do
+      checkTestCaseAuth user tcid . const $ do
         liftIO $ deleteTestCase tcid
         status status200

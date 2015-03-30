@@ -15,32 +15,24 @@ functionRoutes = do
     get "/courses/:id/assignments/:aid/functions" $ auth $ \user -> do
       cid        <- param "id"
       aid        <- param "aid"
-      assignment <- liftIO $ A.getAssignment cid aid
-      okay       <- maybe (return False) (liftIO . checkAssignmentAuth user) assignment
-      checkAuth okay $ do
+      checkAssignmentAuth user cid aid . const $ do
         functions <- liftIO $ getFunctions aid
         json functions
 
     get "/courses/:id/assignments/:aid/functions/:fid" $ auth $ \user -> do
        fid      <- param "fid"
-       function <- liftIO $ getFunction fid
-       okay     <- maybe (return False) (liftIO . checkFunctionAuth user) function
-       checkAuth okay $ maybe (status status404) json function
+       checkFunctionAuth user fid json
 
     post "/courses/:id/assignments/:aid/functions" $ jsonParse "Invalid JSON" $ \f ->
       auth $ \user -> do
         cid        <- param "id"
         aid        <- param "aid"
-        assignment <- liftIO $ A.getAssignment cid aid
-        okay       <- maybe (return False) (liftIO . checkAssignmentAuth user) assignment
-        checkAuth okay $ do
+        checkAssignmentAuth user cid aid . const $ do
           function <- liftIO . insertFunction $ f { assignmentId = aid }
           json function
 
     delete "/courses/:id/assignments/:aid/functions/:fid" $ auth $ \user -> do
       fid      <- param "fid"
-      function <- liftIO $ getFunction fid
-      okay     <- maybe (return False) (liftIO . checkFunctionAuth user) function
-      checkAuth okay $ do
+      checkFunctionAuth user fid . const $ do
         liftIO $ deleteFunction fid
         status status200
