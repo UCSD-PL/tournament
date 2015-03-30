@@ -16,8 +16,8 @@ import Database.HDBC
 import Database.HDBC.PostgreSQL
 import Tournament.Database.Util
 
-data Function = Function { functionId :: Integer
-                         , assignmentId :: Integer
+data Function = Function { id :: Int
+                         , assignmentId :: Int
                          , description :: String
                          , instructions :: String
                          }
@@ -32,7 +32,7 @@ instance FromJSON Function where
 
 instance ToJSON Function where
   toJSON f =
-    object [ "id"           .= functionId f
+    object [ "id"           .= Tournament.Database.Function.id f
            , "assignmentId" .= assignmentId f
            , "description"  .= description f
            , "instructions" .= instructions f
