@@ -1,0 +1,6 @@
+# What were going to try prove
+
+- Courses can only be manipulated by the user who created them
+- TestCases can only be viewed by the user who created the class to which the TestCase belongs
+- TestCases can be viewed by the user who created them
+- (Assignemnts, Functions) can only be altered by the user who created the course to which they belong
