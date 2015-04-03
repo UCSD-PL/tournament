@@ -61,8 +61,8 @@ getTestCase testCaseId = withDatabase $ \conn -> do
 insertTestCase :: TestCase -> IO TestCase
 insertTestCase (TestCase _ a b c _ _) = withDatabase $ \conn -> do
                                  res <- quickQuery' conn "INSERT INTO testCases(functionId, userId, args) VALUES (?, ?, ?) RETURNING id" [toSql a, toSql b, toSql c]
-                                 let rid = fromSql . head . head $ res -- fuck...
-                                 return $ TestCase rid a b c 0 0
+                                 let ((rid : _) : _) = res
+                                 return $ TestCase (fromSql rid) a b c 0 0
 
 deleteTestCase :: Int -> IO Integer
 deleteTestCase functionId = withDatabase $ \conn -> run conn "DELETE FROM testCases WHERE id=?" [toSql functionId]

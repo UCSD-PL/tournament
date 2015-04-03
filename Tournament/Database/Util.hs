@@ -3,6 +3,8 @@ module Tournament.Database.Util where
 import Database.HDBC
 import Database.HDBC.PostgreSQL
 
+{-@ measure secured :: Int -> Prop @-}
+
 database :: String
 database = "dbname=tournament"
 

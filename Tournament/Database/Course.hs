@@ -54,5 +54,5 @@ deleteCourse a = withDatabase $ \conn -> run conn "DELETE FROM courses WHERE id=
 insertCourse :: Course -> IO Course
 insertCourse (Course _ u a b c) = withDatabase $ \conn -> do
                                  res <- quickQuery' conn "INSERT INTO courses(userId, department, course, term) VALUES (?, ?, ?) RETURNING id" [toSql u, toSql a, toSql b, toSql c]
-                                 let id = fromSql . head . head $ res
-                                 return $ Course id u a b c
+                                 let ((id : _) : _) = res
+                                 return $ Course (fromSql id) u a b c

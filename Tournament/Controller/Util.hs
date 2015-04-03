@@ -27,22 +27,31 @@ jsonParse e b = go `rescue` handle
           | "no parse" `isInfixOf` jsonError = status (mkStatus 422 "Unprocessable Entity") >> text e
           | otherwise = raise jsonError
 
+unBase64 :: BS.ByteString -> Maybe (String, String)
+unBase64 x = case BS.split ' ' x of
+  (_ : thing : _) -> case (fmap BS.unpack . BS.split ':' . decodeLenient) thing of
+                       [l, p] -> Just (l, p)
+                       _      -> Nothing
+  _               -> Nothing
+  
+
 auth :: (U.User -> ActionM ()) -> ActionM ()
 auth action = do
   r <- request
   let h = requestHeaders r
   case [v | (k, v) <- h, k == "Authorization" ] of
-   [value] -> do
-     okay <- liftIO $ check (decode value)
-     case okay of
-      Nothing -> unauthorized
-      Just u  -> action u
+   [value] ->
+     case unBase64 value of
+      Just (l, p) -> do
+         user <- liftIO $ check (l, p)
+         case user of
+          Nothing -> unauthorized
+          Just u  -> action u
+      _ -> unauthorized
    _       -> unauthorized
 
   where
-    decode = fmap BS.unpack . BS.split ':' . decodeLenient . head . drop 1 . BS.split ' '
-    check [login, pwd] = U.loginUser login pwd
-    check _            = return Nothing
+    check (login, pwd) = U.loginUser login pwd
 
 checkAssignmentAuth :: U.User -> Int -> Int -> (A.Assignment -> ActionM ()) -> ActionM ()
 checkAssignmentAuth u cid aid action = do
