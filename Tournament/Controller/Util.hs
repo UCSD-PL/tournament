@@ -53,6 +53,10 @@ auth action = do
   where
     check (login, pwd) = U.loginUser login pwd
 
+{-@ assume secured :: a -> U.User -> {v: a | secured v} @-}
+secured :: a -> U.User -> a
+secured a _ = a
+
 checkAssignmentAuth :: U.User -> Int -> Int -> (A.Assignment -> ActionM ()) -> ActionM ()
 checkAssignmentAuth u cid aid action = do
   assignemnt <- liftIO $ A.getAssignment cid aid

@@ -38,19 +38,23 @@ instance ToJSON Course where
 toCourse :: [SqlValue] -> Course
 toCourse (id : user : department : course : prof : _) = Course (fromSql id) (fromSql user) (fromSql department) (fromSql course) (fromSql prof)
 
+{-@ getCourses :: {v: Int | secured v} -> IO [Course] @-}
 getCourses :: Int -> IO [Course]
 getCourses u = withDatabase $ \conn -> do
                 courses <- quickQuery' conn "SELECT * FROM courses WHERE userId = ?" [toSql u]
                 return $ map toCourse courses
 
+{-@ getCourse :: {v: Int | secured v} -> IO (Maybe Course) @-}
 getCourse :: Int -> IO (Maybe Course)
 getCourse a = withDatabase $ \conn -> do
                  course <- quickQuery' conn "SELECT * FROM courses WHERE id=?" [toSql a]
                  return $ fmap toCourse . listToMaybe $ course
 
+{-@ deleteCourse :: {v: Int | secured v} -> IO Integer @-}
 deleteCourse :: Int -> IO Integer
 deleteCourse a = withDatabase $ \conn -> run conn "DELETE FROM courses WHERE id=?" [toSql a]
 
+{-@ insertCourse :: {v: Course | secured v} -> IO Course @-}
 insertCourse :: Course -> IO Course
 insertCourse (Course _ u a b c) = withDatabase $ \conn -> do
                                  res <- quickQuery' conn "INSERT INTO courses(userId, department, course, term) VALUES (?, ?, ?) RETURNING id" [toSql u, toSql a, toSql b, toSql c]
